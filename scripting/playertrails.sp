@@ -292,10 +292,11 @@ public OnSettingsChange(Handle:cvar, const String:oldvalue[], const String:newva
         g_fCvar_Trail_End_Width = StringToFloat(newvalue);
 }
 
-stock bool IsValidClient(int client)
+stock bool IsValidClient(int client, bool bAllowBots = false, bool bAllowDead = true)
 {
-    if (!(0 < client <= MaxClients)) return false;
-    if (!IsClientInGame(client)) return false;
-    if (IsFakeClient(client)) return false;
-    return true;
+	if(!(1 <= client <= MaxClients) || !IsClientInGame(client) || (IsFakeClient(client) && !bAllowBots) || IsClientSourceTV(client) || IsClientReplay(client) || (!bAllowDead && !IsPlayerAlive(client)))
+	{
+		return false;
+	}
+	return true;
 }
