@@ -1,4 +1,4 @@
-### [CS:GO] Player Trails (v1.0.0 2015-09-06)
+### [CS:GO] Player Trails (v1.0.0, 2015-09-06)
 <a href="http://www.maxximou5.com/"><img src="http://maxximou5.com/sourcemod/assests/img/playertrails_csgo.png" alt="csgo player trails plugin" width="600" /></a>
 ===============
 
@@ -43,7 +43,6 @@ Enables player colored trails.
 - sm_trail_fade_duration (Default) 3 - Duration of the trail.
 - sm_trail_per_round (Default) 5 - How many times per round a client can use the command.
 - sm_trail_width (Default) 5 - Width of the trail.
-- sm_trailcolors_version (Default) 1 - Gives clients a colored trail when moving.
 
 ### Compatibility
 
@@ -56,9 +55,10 @@ Auto-Update Support requires <a href="https://forums.alliedmods.net/showthread.p
 
 ### Instructions
 
+- This plugin auto-creates an autoexec file inside /csgo/cfg/sourcemod/**playertrails.cfg**
 - Extract zip file and place files in the corresponding directories of **/addons/sourcemod**
 - /plugins/playertrails.smx
-- /scripting/deathmatch.sp (necessary only for compiling)
+- /scripting/playertrails.sp (necessary only for compiling)
 - /scripting/include/csgocolors.inc (necessary only for compiling)
 - /scripting/include/updater.inc (necessary only for updater)
 
