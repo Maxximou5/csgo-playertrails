@@ -1,4 +1,4 @@
-### [CS:GO] Player Trails (v1.0.0, 2015-09-06)
+### [CS:GO] Player Trails (v1.0.1 2015-09-27)
 <a href="http://www.maxximou5.com/"><img src="http://maxximou5.com/sourcemod/assests/img/playertrails_csgo.png" alt="csgo player trails plugin" width="600" /></a>
 ===============
 
@@ -43,6 +43,7 @@ Enables player colored trails.
 - sm_trail_fade_duration (Default) 3 - Duration of the trail.
 - sm_trail_per_round (Default) 5 - How many times per round a client can use the command.
 - sm_trail_width (Default) 5 - Width of the trail.
+- sm_playertrails_version (Default) 1 - Gives clients a colored trail when moving.
 
 ### Compatibility
 
@@ -55,10 +56,9 @@ Auto-Update Support requires <a href="https://forums.alliedmods.net/showthread.p
 
 ### Instructions
 
-- This plugin auto-creates an autoexec file inside /csgo/cfg/sourcemod/**playertrails.cfg**
 - Extract zip file and place files in the corresponding directories of **/addons/sourcemod**
 - /plugins/playertrails.smx
-- /scripting/playertrails.sp (necessary only for compiling)
+- /scripting/deathmatch.sp (necessary only for compiling)
 - /scripting/include/csgocolors.inc (necessary only for compiling)
 - /scripting/include/updater.inc (necessary only for updater)
 
@@ -68,15 +68,12 @@ To view the most recent changelog visit the <a href="https://github.com/Maxximou
 
 ### Download
 
-Once installed
-the plugin will update itself as long as you've done as described in the requirements section; otherwise
-downloaded the latest release below.
-Please download the latest **deathmatch.zip** file from <a href="https://github.com/Maxximou5/csgo-playertrails/releases">my releases</a>.
+Once installed, the plugin will update itself as long as you've done as described in the requirements section; otherwise, downloaded the latest release below.
+Please download the latest **playertrails.zip** file from <a href="https://github.com/Maxximou5/csgo-playertrails/releases">my releases</a>.
 
 ### Bugs
 
-If there are any bugs
-please report them using the <a href="https://github.com/Maxximou5/csgo-playertrails/issues">issues page</a>.
+If there are any bugs, please report them using the <a href="https://github.com/Maxximou5/csgo-playertrails/issues">issues page</a>.
 
 ### Credit
 
@@ -86,8 +83,7 @@ A thank you to those who helped:
 
 ### Donate
 
-If you think I am doing a good job or you want to buy me a beer or feed my cat
-please donate.
+If you think I am doing a good job or you want to buy me a beer or feed my cat, please donate.
 Thanks!
 
 <a href="https://www.paypal.com/cgi-bin/webscr?cmd=_s-xclick&hosted_button_id=VSHQ7J8HR95SG"><img src="https://www.paypalobjects.com/en_US/i/btn/btn_donateCC_LG.gif" alt="csgo player trails plugin"/></a>

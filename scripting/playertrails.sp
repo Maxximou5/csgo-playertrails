@@ -1,5 +1,3 @@
-#pragma semicolon 1
-
 #include <cstrike>
 #include <csgocolors>
 #include <sourcemod>
@@ -7,32 +5,35 @@
 #undef REQUIRE_PLUGIN
 #include <updater>
 
-Handle g_hCvar_Trail_Enable = INVALID_HANDLE,
-g_hCvar_Trail_AdminOnly = INVALID_HANDLE,
-g_hCvar_Trail_Duration = INVALID_HANDLE,
-g_hCvar_Trail_Fade_Duration = INVALID_HANDLE,
-g_hCvar_Trail_Width = INVALID_HANDLE,
-g_hCvar_Trail_End_Width = INVALID_HANDLE,
-g_hCvar_Trail_Per_Round = INVALID_HANDLE;
+ConVar g_hCvar_Trail_Enable = null,
+g_hCvar_Trail_AdminOnly = null,
+g_hCvar_Trail_Duration = null,
+g_hCvar_Trail_Fade_Duration = null,
+g_hCvar_Trail_Width = null,
+g_hCvar_Trail_End_Width = null,
+g_hCvar_Trail_Per_Round = null;
+
 float g_fCvar_Trail_Duration,
 g_fCvar_Trail_Width,
 g_fCvar_Trail_End_Width;
+
 bool g_bCvar_Trail_Enable,
 g_bCvar_Trail_AdminOnly,
 b_Trail[MAXPLAYERS+1] = { false, ... };
-int i_TrailIndex,
+
+int SpamCMD = 0,
+i_TrailIndex,
 trailcolor[4],
 g_iCvar_Trail_Fade_Duration,
 g_iCvar_Trail_Per_Round;
-new SpamCMD = 0;
 
-#define PLUGIN_VERSION                  "1.0.0"
+#define PLUGIN_VERSION                  "1.0.1"
 #define PLUGIN_NAME                     "[CS:GO] Player Trails"
 #define PLUGIN_DESCRIPTION              "Gives clients a colored trail when moving."
 #define UPDATE_URL                      "http://www.maxximou5.com/sourcemod/playertrails/update.txt"
 #define MODEL_TRAIL                     "materials/sprites/laserbeam.vmt"
 
-public Plugin:myinfo =
+public Plugin myinfo =
 {
     name            = PLUGIN_NAME,
     author          = "Maxximou5",
@@ -45,15 +46,15 @@ public void OnPluginStart()
 {
     LoadTranslations("common.phrases");
 
-    CreateConVar( "sm_trailcolors_version", PLUGIN_VERSION, PLUGIN_DESCRIPTION, FCVAR_PLUGIN | FCVAR_SPONLY | FCVAR_NOTIFY | FCVAR_DONTRECORD );
+    CreateConVar( "sm_playertrails_version", PLUGIN_VERSION, PLUGIN_DESCRIPTION, FCVAR_PLUGIN | FCVAR_SPONLY | FCVAR_NOTIFY | FCVAR_DONTRECORD );
 
-    g_hCvar_Trail_Enable = CreateConVar("sm_trail_enable", "1", "Enable or Disable all features of the plugin.", FCVAR_NONE, true, 0.0, true, 1.0);
-    g_hCvar_Trail_AdminOnly = CreateConVar("sm_trail_adminonly", "0", "Enable trails only for Admins (VOTE Flag).", FCVAR_NONE, true, 0.0, true, 1.0);
+    g_hCvar_Trail_Enable = CreateConVar("sm_trail_enable", "1", "Enable or Disable all features of the plugin.", FCVAR_PLUGIN, true, 0.0, true, 1.0);
+    g_hCvar_Trail_AdminOnly = CreateConVar("sm_trail_adminonly", "0", "Enable trails only for Admins (VOTE Flag).", FCVAR_PLUGIN, true, 0.0, true, 1.0);
     g_hCvar_Trail_Duration = CreateConVar("sm_trail_duration", "5.0", "Duration of the trail.", FCVAR_PLUGIN, true, 1.0, true, 100.0);
-    g_hCvar_Trail_Fade_Duration = CreateConVar("sm_trail_fade_duration", "3", "Duration of the trail.", FCVAR_PLUGIN);
+    g_hCvar_Trail_Fade_Duration = CreateConVar("sm_trail_fade_duration", "3", "Duration of the trail.", FCVAR_PLUGIN, true, 1.0, true, 100.0);
     g_hCvar_Trail_Width = CreateConVar("sm_trail_width", "5.0", "Width of the trail.", FCVAR_PLUGIN, true, 1.0, true, 100.0);
     g_hCvar_Trail_End_Width = CreateConVar("sm_trail_end_width", "1.0", "Width of the trail.", FCVAR_PLUGIN, true, 1.0, true, 100.0);
-    g_hCvar_Trail_Per_Round = CreateConVar("sm_trail_per_round", "5", "How many times per round a client can use the command.", FCVAR_PLUGIN);
+    g_hCvar_Trail_Per_Round = CreateConVar("sm_trail_per_round", "5", "How many times per round a client can use the command.", FCVAR_PLUGIN, true, 1.0, true, 100.0);
 
     HookConVarChange(g_hCvar_Trail_Enable, OnSettingsChange);
     HookConVarChange(g_hCvar_Trail_AdminOnly, OnSettingsChange);
@@ -63,15 +64,9 @@ public void OnPluginStart()
     HookConVarChange(g_hCvar_Trail_End_Width, OnSettingsChange);
     HookConVarChange(g_hCvar_Trail_Per_Round, OnSettingsChange);
 
-    g_bCvar_Trail_Enable = GetConVarBool(g_hCvar_Trail_Enable);
-    g_bCvar_Trail_AdminOnly = GetConVarBool(g_hCvar_Trail_AdminOnly);
-    g_fCvar_Trail_Duration = GetConVarFloat(g_hCvar_Trail_Duration);
-    g_iCvar_Trail_Fade_Duration = GetConVarInt(g_hCvar_Trail_Fade_Duration);
-    g_fCvar_Trail_Width = GetConVarFloat(g_hCvar_Trail_Width);
-    g_fCvar_Trail_End_Width = GetConVarFloat(g_hCvar_Trail_End_Width);
-    g_iCvar_Trail_Per_Round = GetConVarInt(g_hCvar_Trail_Per_Round);
+    UpdateConVars();
 
-    AutoExecConfig(true, "trailcolors");
+    AutoExecConfig(true, "playertrails");
 
     RegConsoleCmd("sm_trail", Command_Trail);
     RegConsoleCmd("sm_trails", Command_Trail);
@@ -89,6 +84,11 @@ public void OnPluginStart()
     }
 }
 
+public void OnConfigsExecuted()
+{
+    UpdateConVars();
+}
+
 public void OnLibraryAdded(const String:name[])
 {
     if (StrEqual(name, "updater"))
@@ -99,7 +99,10 @@ public void OnLibraryAdded(const String:name[])
 
 public void OnLibraryRemoved(const String:name[])
 {
-    if (StrEqual(name, "updater")) Updater_RemovePlugin();
+    if (StrEqual(name, "updater"))
+    {
+        Updater_RemovePlugin();
+    }
 }
 
 public void OnMapStart()
@@ -107,14 +110,22 @@ public void OnMapStart()
     i_TrailIndex = PrecacheModel(MODEL_TRAIL, true);
 }
 
-public Action Event_OnPlayerSpawn(Handle event, const char[] name, bool dontBroadcast)
+public Action Event_OnPlayerSpawn(Event event, const char[] name, bool dontBroadcast)
 {
     int client = GetClientOfUserId(GetEventInt(event, "userid"));
     if (g_bCvar_Trail_Enable && b_Trail[client] && IsValidClient(client))
     {
+        if (g_bCvar_Trail_AdminOnly)
+        {
+            if (!(GetUserFlagBits(client) & ADMFLAG_VOTE) || !(GetUserFlagBits(client) & ADMFLAG_ROOT))
+            {
+                return Plugin_Handled;
+            }
+        }
         SpamCMD = 0;
         CreateTimer(1.0, Timer_CreateTrail, client);
     }
+    return Plugin_Handled;
 }
 
 public Action Command_Trail(int client, int args)
@@ -276,20 +287,22 @@ public Action Timer_CreateTrail(Handle timer, any client)
     return Plugin_Handled;
 }
 
-public OnSettingsChange(Handle:cvar, const String:oldvalue[], const String:newvalue[])
+public OnSettingsChange(ConVar convar, const char[] oldValue, const char[] newValue)
 {
-    if(cvar == g_hCvar_Trail_Enable)
-        g_bCvar_Trail_Enable = StringToInt(newvalue) ? true : false;
-    else if(cvar == g_hCvar_Trail_AdminOnly)
-        g_bCvar_Trail_AdminOnly = StringToInt(newvalue) ? true : false;
-    else if(cvar == g_hCvar_Trail_Duration)
-        g_fCvar_Trail_Duration = StringToFloat(newvalue);
-    else if(cvar == g_hCvar_Trail_Fade_Duration)
-        g_iCvar_Trail_Fade_Duration = StringToInt(newvalue);
-    else if(cvar == g_hCvar_Trail_Width)
-        g_fCvar_Trail_Width = StringToFloat(newvalue);
-    else if(cvar == g_hCvar_Trail_End_Width)
-        g_fCvar_Trail_End_Width = StringToFloat(newvalue);
+    if(convar == g_hCvar_Trail_Enable)
+        g_bCvar_Trail_Enable = StringToInt(newValue) ? true : false;
+    else if(convar == g_hCvar_Trail_AdminOnly)
+        g_bCvar_Trail_AdminOnly = StringToInt(newValue) ? true : false;
+    else if(convar == g_hCvar_Trail_Duration)
+        g_fCvar_Trail_Duration = StringToFloat(newValue);
+    else if(convar == g_hCvar_Trail_Fade_Duration)
+        g_iCvar_Trail_Fade_Duration = StringToInt(newValue);
+    else if(convar == g_hCvar_Trail_Width)
+        g_fCvar_Trail_Width = StringToFloat(newValue);
+    else if(convar == g_hCvar_Trail_End_Width)
+        g_fCvar_Trail_End_Width = StringToFloat(newValue);
+    else if(convar == g_hCvar_Trail_Per_Round)
+        g_iCvar_Trail_Per_Round = StringToInt(newValue);
 }
 
 stock bool IsValidClient(int client)
@@ -298,4 +311,15 @@ stock bool IsValidClient(int client)
     if (!IsClientInGame(client)) return false;
     if (IsFakeClient(client)) return false;
     return true;
+}
+
+UpdateConVars()
+{
+    g_bCvar_Trail_Enable = GetConVarBool(g_hCvar_Trail_Enable);
+    g_bCvar_Trail_AdminOnly = GetConVarBool(g_hCvar_Trail_AdminOnly);
+    g_fCvar_Trail_Duration = GetConVarFloat(g_hCvar_Trail_Duration);
+    g_iCvar_Trail_Fade_Duration = GetConVarInt(g_hCvar_Trail_Fade_Duration);
+    g_fCvar_Trail_Width = GetConVarFloat(g_hCvar_Trail_Width);
+    g_fCvar_Trail_End_Width = GetConVarFloat(g_hCvar_Trail_End_Width);
+    g_iCvar_Trail_Per_Round = GetConVarInt(g_hCvar_Trail_Per_Round);
 }

@@ -4,10 +4,13 @@
 	{
 		"Version"
 		{
-			"Latest"	"1.0.0"
+			"Latest"	"1.0.1"
+			"Previous"	"1.0.0"
 		}
 
-		"Notes"	"First release version 1.0.0"
+		"Notes"	"Changes in 1.0.1:"
+		"Notes"	"Fixed: Non-admins getting trails if admin only was set to 1."
+		"Notes" "Changed: Version name and autoexec name."
 	}
 
 	"Files"
