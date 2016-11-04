@@ -1,4 +1,4 @@
-### [CS:GO] Player Trails (v1.0.1 2015-09-27)
+### [CS:GO] Player Trails (v1.1.0 2016-11-04)
 <a href="http://www.maxximou5.com/"><img src="http://maxximou5.com/sourcemod/assests/img/playertrails_csgo.png" alt="csgo player trails plugin" width="600" /></a>
 ===============
 
@@ -7,6 +7,7 @@ Enables player colored trails.
 ### Main Features
 
 - Trail Beam Options:
+ - Admin or VIP only
  - Duration of trail
  - Width of trail
  - Fade duration of trail
@@ -31,6 +32,8 @@ Enables player colored trails.
 
 ### Commands
 
+- sm_trail - Opens a menu, when a color is not specified
+- sm_trails - Opens a menu, when a color is not specified
 - sm_trail <color> [red, orange, yellow, green, blue, purple, pink, cyan, white, none]
 - sm_trails <color> [red, orange, yellow, green, blue, purple, pink, cyan, white, none]
 
@@ -49,7 +52,7 @@ Enables player colored trails.
 
 This plugin is tested on the following Sourcemod & Metamod Versions.
 
-- <a href="http://www.sourcemod.net/snapshots.php">Sourcemod 1.7.3+</a>
+- <a href="http://www.sourcemod.net/downloads.php">Sourcemod 1.8.0+</a>
 - <a href="http://www.sourcemm.net/snapshots">Metamod 1.10.4+</a>
 
 Auto-Update Support requires <a href="https://forums.alliedmods.net/showthread.php?t=169095">updater</a> to be installed.

@@ -4,13 +4,19 @@
 	{
 		"Version"
 		{
-			"Latest"	"1.0.1"
-			"Previous"	"1.0.0"
+			"Latest"	"1.1.0"
+			"Previous"	"1.0.1"
 		}
 
-		"Notes"	"Changes in 1.0.1:"
-		"Notes"	"Fixed: Non-admins getting trails if admin only was set to 1."
-		"Notes" "Changed: Version name and autoexec name."
+		"Notes"	"Changes in 1.1.0:"
+		"Notes" "Fixed: Trails disappearing and not returning (solution from Zephyrus)"
+		"Notes" "Fixed: Trails not applying to correct player"
+		"Notes" "Fixed: Admin access not working properly"
+		"Notes" "Fixed: Minor fixes and checks for lame error events"
+		"Notes" "Fixed: Trail duplication and spam bypass"
+		"Notes" "Added: Trail detector, for when trails disappear (solution from shavit)"
+		"Notes" "Added: Menu system for players to choose colors"
+		"Notes" "Added: Override for admin (default access: ADMFLAG_RESERVATION). Use sm_playertrails_override to override"
 	}
 
 	"Files"
